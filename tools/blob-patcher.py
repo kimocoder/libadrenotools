@@ -6,19 +6,19 @@ def patch_lib_base(in_dir, out_dir, libs, in_name, out_name):
         with open(out_dir + out_name, "wb") as outf:
             content = inf.read()
             for lib in libs:
-                print(out_name + ": repl:", lib[0], "->", lib[1])
+                print(f"{out_name}: repl:", lib[0], "->", lib[1])
                 content = content.replace(lib[0].encode(), lib[1].encode())
 
             content = content.replace(in_name.encode(), out_name.encode())
             outf.write(content);
 
 def patch_lib(in_dir, out_dir, libs, name):
-    patch_lib_base(in_dir, out_dir, libs, "lib" + name + ".so", "not" + name + ".so")
+    patch_lib_base(in_dir, out_dir, libs, f"lib{name}.so", f"not{name}.so")
 
 def patch_references(lib_dir, out_dir, vulkan_libname, vulkan_newname, shim_mapper):
     try:
         os.mkdir(out_dir)
-        os.mkdir(out_dir + "/hw")
+        os.mkdir(f"{out_dir}/hw")
     except:
         pass
 
@@ -42,7 +42,13 @@ def patch_references(lib_dir, out_dir, vulkan_libname, vulkan_newname, shim_mapp
         except:
             pass
 
-    patch_lib_base(lib_dir + "/hw/", out_dir + "/hw/", replacement_list, vulkan_libname, vulkan_newname)
+    patch_lib_base(
+        f"{lib_dir}/hw/",
+        f"{out_dir}/hw/",
+        replacement_list,
+        vulkan_libname,
+        vulkan_newname,
+    )
 
 if (len(sys.argv)!= 6):
     print("<in> <out> <vk soname> <vk soname new> <device mapper ver>")
@@ -55,7 +61,7 @@ out_path = sys.argv[2]
 vulkan_libname = sys.argv[3]
 vulkan_newname = sys.argv[4]
 shim_mapper = int(sys.argv[5])
-vendor_path = root_path + "/vendor/"
+vendor_path = f"{root_path}/vendor/"
 
 if (len(vulkan_newname) != len(vulkan_libname)):
     print("Errror")
